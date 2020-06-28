@@ -14,8 +14,6 @@ use crate::game::{D15Game, Move, PlayerState, Point};
 
 mod game;
 
-// TODO: Impl other performance stuff: order?
-
 lazy_static! {
     static ref CHECKED_PERMUTATIONS: Mutex<HashedSet<u64>> = {
         Mutex::new(HashedSet::with_capacity_and_hasher(1000000, HashBuildHasher::default()))

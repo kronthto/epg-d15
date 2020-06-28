@@ -167,16 +167,26 @@ impl D15Game {
             moves.push(Move::PASSTURN);
         }
 
-        if self.can_move_to(&Point { x: self.player.x - move_amount, y: self.player.y }, Entity::PLAYER) {
+        let left_possible = self.can_move_to(&Point { x: self.player.x - move_amount, y: self.player.y }, Entity::PLAYER);
+        let right_possible = self.can_move_to(&Point { x: self.player.x + move_amount, y: self.player.y }, Entity::PLAYER);
+        let down_possible = self.can_move_to(&Point { x: self.player.x, y: self.player.y - move_amount }, Entity::PLAYER);
+        let up_possible = self.can_move_to(&Point { x: self.player.x, y: self.player.y + move_amount }, Entity::PLAYER);
+
+        let prio_up = self.boss.y - self.player.y > 0;
+        let prio_down = self.player.y - self.boss.y > 0;
+        let prio_right = self.boss.x - self.player.x > 0;
+        let prio_left = self.player.x - self.boss.x > 0;
+
+        if left_possible && prio_left {
             moves.push(Move::LEFT);
         }
-        if self.can_move_to(&Point { x: self.player.x + move_amount, y: self.player.y }, Entity::PLAYER) {
+        if right_possible && prio_right {
             moves.push(Move::RIGHT);
         }
-        if self.can_move_to(&Point { x: self.player.x, y: self.player.y - move_amount }, Entity::PLAYER) {
+        if down_possible && prio_down {
             moves.push(Move::DOWN);
         }
-        if self.can_move_to(&Point { x: self.player.x, y: self.player.y + move_amount }, Entity::PLAYER) {
+        if up_possible && prio_up {
             moves.push(Move::UP);
         }
 
@@ -184,6 +194,19 @@ impl D15Game {
         moves.push(Move::CAT);
         moves.push(Move::DRAGON);
         moves.push(Move::SWITCH);
+
+        if left_possible && !prio_left {
+            moves.push(Move::LEFT);
+        }
+        if right_possible && !prio_right {
+            moves.push(Move::RIGHT);
+        }
+        if down_possible && !prio_down {
+            moves.push(Move::DOWN);
+        }
+        if up_possible && !prio_up {
+            moves.push(Move::UP);
+        }
 
         return moves;
     }
