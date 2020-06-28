@@ -1,14 +1,16 @@
 #[macro_use]
 extern crate lazy_static;
 
-use crate::game::{D15Game, Point, PlayerState, Move};
-use std::thread;
-use std::process::exit;
 use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash,Hasher};
+use std::hash::{Hash, Hasher};
+use std::ops::DerefMut;
+use std::process::exit;
 use std::sync::{Mutex, MutexGuard};
-use std::ops::{DerefMut};
-use hash_hasher::{HashedSet,HashBuildHasher};
+use std::thread;
+
+use hash_hasher::{HashBuildHasher, HashedSet};
+
+use crate::game::{D15Game, Move, PlayerState, Point};
 
 mod game;
 
@@ -27,14 +29,14 @@ fn calculate_hash<T: Hash>(t: &T) -> u64 {
 }
 
 fn main() {
-    //let game = D15Game::new(50, Point { x: 2, y: 5 },  Point { x: 4, y: 6 },  Point { x: 0, y: 7 },  Point { x: 4, y: 5 },  Point { x: 3, y: 5 }, PlayerState::ARMOR); // att 7
-   // let game = D15Game::new(55, Point { x: 3, y: 5 },  Point { x: 1, y: 7 },  Point { x: 7, y: 6 },  Point { x: 0, y: 4 },  Point { x: 2, y: 2 }, PlayerState::ARMOR); // att 5
- //   let game = D15Game::new(80, Point { x: 2, y: 5 },  Point { x: 4, y: 5 },  Point { x: 5, y: 3 },  Point { x: 7, y: 7 },  Point { x: 2, y: 2 }, PlayerState::ARMOR); // att 7 80
-   // let game = D15Game::new(109, Point { x: 2, y: 5 },  Point { x: 3, y: 5 },  Point { x: 5, y: 4 },  Point { x: 7, y: 6 },  Point { x: 5, y: 5 }, PlayerState::ARMOR); // att 7 80
-   // let game = D15Game::new(128, Point { x: 4, y: 5 },  Point { x: 6, y: 4 },  Point { x: 4, y: 6 },  Point { x: 3, y: 3 },  Point { x: 2, y: 4 }, PlayerState::SWORD); // att 2
-   // let game = D15Game::new(130, Point { x: 4, y: 5 },  Point { x: 7, y: 1 },  Point { x: 2, y: 4 },  Point { x: 3, y: 0 },  Point { x: 6, y: 6 }, PlayerState::ARMOR); // att 4
-  //  let game = D15Game::new(130, Point { x: 2, y: 5 },  Point { x: 4, y: 5 },  Point { x: 2, y: 4 },  Point { x: 5, y: 6 },  Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG
-    let game = D15Game::new(130, Point { x: 5, y: 5 },  Point { x: 4, y: 5 },  Point { x: 2, y: 4 },  Point { x: 5, y: 6 },  Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG 5/5
+    // let game = D15Game::new(50, Point { x: 2, y: 5 },  Point { x: 4, y: 6 },  Point { x: 0, y: 7 },  Point { x: 4, y: 5 },  Point { x: 3, y: 5 }, PlayerState::ARMOR); // att 7
+    // let game = D15Game::new(55, Point { x: 3, y: 5 },  Point { x: 1, y: 7 },  Point { x: 7, y: 6 },  Point { x: 0, y: 4 },  Point { x: 2, y: 2 }, PlayerState::ARMOR); // att 5
+    // let game = D15Game::new(80, Point { x: 2, y: 5 },  Point { x: 4, y: 5 },  Point { x: 5, y: 3 },  Point { x: 7, y: 7 },  Point { x: 2, y: 2 }, PlayerState::ARMOR); // att 7 80
+    // let game = D15Game::new(109, Point { x: 2, y: 5 },  Point { x: 3, y: 5 },  Point { x: 5, y: 4 },  Point { x: 7, y: 6 },  Point { x: 5, y: 5 }, PlayerState::ARMOR); // att 7 80
+    // let game = D15Game::new(128, Point { x: 4, y: 5 },  Point { x: 6, y: 4 },  Point { x: 4, y: 6 },  Point { x: 3, y: 3 },  Point { x: 2, y: 4 }, PlayerState::SWORD); // att 2
+    // let game = D15Game::new(130, Point { x: 4, y: 5 },  Point { x: 7, y: 1 },  Point { x: 2, y: 4 },  Point { x: 3, y: 0 },  Point { x: 6, y: 6 }, PlayerState::ARMOR); // att 4
+    // let game = D15Game::new(130, Point { x: 2, y: 5 },  Point { x: 4, y: 5 },  Point { x: 2, y: 4 },  Point { x: 5, y: 6 },  Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG
+    let game = D15Game::new(130, Point { x: 5, y: 5 }, Point { x: 4, y: 5 }, Point { x: 2, y: 4 }, Point { x: 5, y: 6 }, Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG 5/5
 
     let mut game_switch = game.clone();
     let mut game_pass = game.clone();
@@ -52,10 +54,9 @@ fn main() {
     let handle3 = thread::spawn(move || {
         let moves = game.get_possible_moves();
 
-        let moves_done : Vec<Move> = Vec::new();
+        let moves_done: Vec<Move> = Vec::new();
 
         for move_oper in &moves {
-
             if *move_oper == Move::PASSTURN || *move_oper == Move::SWITCH {
                 continue;
             }

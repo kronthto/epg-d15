@@ -1,7 +1,7 @@
+use std::hash::Hash;
 use std::mem::swap;
 
 use crate::game::Entity::{BOSS, DOG, DRAGON, PLAYER};
-use std::hash::{Hash};
 
 pub const ROOM_MAX_X: i8 = 7;
 pub const ROOM_MAX_Y: i8 = 7;
@@ -11,14 +11,15 @@ const PATTERN_2_LIMIT: i16 = 100;
 // TODO: This (P2 limit) changed
 const PATTERN_3_LIMIT: i16 = 60;
 
-#[derive(Hash,Eq)]
+#[derive(Hash, Eq)]
 pub struct Point {
     pub(crate) x: i8,
     pub(crate) y: i8,
 }
+
 impl Clone for Point {
     fn clone(&self) -> Point {
-        Point{x: self.x, y: self.y}
+        Point { x: self.x, y: self.y }
     }
 }
 
@@ -40,13 +41,13 @@ impl Point {
     }
 }
 
-#[derive(Copy,Clone,Hash,PartialEq,Eq)]
+#[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub enum PlayerState {
     SWORD,
     ARMOR,
 }
 
-#[derive(PartialEq,Copy,Clone)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum Move {
     LEFT,
     RIGHT,
@@ -70,7 +71,7 @@ pub enum Entity {
 
 const ENTITIES: [Entity; 5] = [PLAYER, BOSS, Entity::CAT, DOG, DRAGON];
 
-#[derive(Eq,PartialEq,Hash)]
+#[derive(Eq, PartialEq, Hash)]
 pub struct D15Game {
     hp: i16,
     player: Point,
@@ -233,9 +234,9 @@ impl D15Game {
             let diff_y = self.dragon.y - self.cat.y;
             let cat_move: Point;
             if diff_x.abs() > diff_y.abs() {
-                cat_move = Point{x: self.cat.x + diff_x.signum(), y: self.cat.y};
+                cat_move = Point { x: self.cat.x + diff_x.signum(), y: self.cat.y };
             } else {
-                cat_move = Point{x: self.cat.x, y: self.cat.y + diff_y.signum()};
+                cat_move = Point { x: self.cat.x, y: self.cat.y + diff_y.signum() };
             }
             if self.can_move_to(&cat_move, Entity::CAT) {
                 self.cat = cat_move;
@@ -248,9 +249,9 @@ impl D15Game {
             let diff_y = self.cat.y - self.player.y;
             let cat_move: Point;
             if diff_x.abs() >= diff_y.abs() {
-                cat_move = Point{x: self.cat.x + diff_x.signum(), y: self.cat.y};
+                cat_move = Point { x: self.cat.x + diff_x.signum(), y: self.cat.y };
             } else {
-                cat_move = Point{x: self.cat.x, y: self.cat.y + diff_y.signum()};
+                cat_move = Point { x: self.cat.x, y: self.cat.y + diff_y.signum() };
             }
             if self.can_move_to(&cat_move, Entity::CAT) {
                 self.cat = cat_move;
@@ -278,28 +279,28 @@ impl D15Game {
     }
 
     pub fn new(hp: i16, boss: Point, player: Point, cat: Point, dog: Point, dragon: Point, playerstate: PlayerState) -> D15Game {
-        D15Game{
+        D15Game {
             hp,
             player,
             boss,
             cat,
             dog,
             dragon,
-            playerstate
+            playerstate,
         }
     }
 }
 
 impl Clone for D15Game {
     fn clone(&self) -> D15Game {
-        D15Game{
+        D15Game {
             hp: self.hp,
             player: self.player.clone(),
             boss: self.boss.clone(),
             cat: self.cat.clone(),
             dog: self.dog.clone(),
             dragon: self.dragon.clone(),
-            playerstate: self.playerstate
+            playerstate: self.playerstate,
         }
     }
 }
