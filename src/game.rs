@@ -172,21 +172,23 @@ impl D15Game {
         let down_possible = self.can_move_to(&Point { x: self.player.x, y: self.player.y - move_amount }, Entity::PLAYER);
         let up_possible = self.can_move_to(&Point { x: self.player.x, y: self.player.y + move_amount }, Entity::PLAYER);
 
+        /*
         let prio_up = self.boss.y - self.player.y > 0;
         let prio_down = self.player.y - self.boss.y > 0;
         let prio_right = self.boss.x - self.player.x > 0;
         let prio_left = self.player.x - self.boss.x > 0;
+        */
 
-        if left_possible && prio_left {
+        if left_possible {
             moves.push(Move::LEFT);
         }
-        if right_possible && prio_right {
+        if right_possible {
             moves.push(Move::RIGHT);
         }
-        if down_possible && prio_down {
+        if down_possible {
             moves.push(Move::DOWN);
         }
-        if up_possible && prio_up {
+        if up_possible {
             moves.push(Move::UP);
         }
 
@@ -194,19 +196,6 @@ impl D15Game {
         moves.push(Move::CAT);
         moves.push(Move::DRAGON);
         moves.push(Move::SWITCH);
-
-        if left_possible && !prio_left {
-            moves.push(Move::LEFT);
-        }
-        if right_possible && !prio_right {
-            moves.push(Move::RIGHT);
-        }
-        if down_possible && !prio_down {
-            moves.push(Move::DOWN);
-        }
-        if up_possible && !prio_up {
-            moves.push(Move::UP);
-        }
 
         return moves;
     }

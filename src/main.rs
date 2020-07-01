@@ -33,8 +33,8 @@ fn main() {
     // let game = D15Game::new(109, Point { x: 2, y: 5 },  Point { x: 3, y: 5 },  Point { x: 5, y: 4 },  Point { x: 7, y: 6 },  Point { x: 5, y: 5 }, PlayerState::ARMOR); // att 7 80
     // let game = D15Game::new(128, Point { x: 4, y: 5 },  Point { x: 6, y: 4 },  Point { x: 4, y: 6 },  Point { x: 3, y: 3 },  Point { x: 2, y: 4 }, PlayerState::SWORD); // att 2
     // let game = D15Game::new(130, Point { x: 4, y: 5 },  Point { x: 7, y: 1 },  Point { x: 2, y: 4 },  Point { x: 3, y: 0 },  Point { x: 6, y: 6 }, PlayerState::ARMOR); // att 4
-    // let game = D15Game::new(130, Point { x: 2, y: 5 },  Point { x: 4, y: 5 },  Point { x: 2, y: 4 },  Point { x: 5, y: 6 },  Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG
-    let game = D15Game::new(130, Point { x: 5, y: 5 }, Point { x: 4, y: 5 }, Point { x: 2, y: 4 }, Point { x: 5, y: 6 }, Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG 5/5
+    let game = D15Game::new(130, Point { x: 2, y: 5 },  Point { x: 4, y: 5 },  Point { x: 2, y: 4 },  Point { x: 5, y: 6 },  Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG
+    // let game = D15Game::new(130, Point { x: 5, y: 5 }, Point { x: 4, y: 5 }, Point { x: 2, y: 4 }, Point { x: 5, y: 6 }, Point { x: 2, y: 3 }, PlayerState::ARMOR); // OMG 5/5
 
     let mut game_switch = game.clone();
     let mut game_pass = game.clone();
