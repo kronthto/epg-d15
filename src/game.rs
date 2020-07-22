@@ -8,7 +8,6 @@ pub const ROOM_MAX_Y: i8 = 7;
 
 const PATTERN_1_LIMIT: i16 = 130;
 const PATTERN_2_LIMIT: i16 = 100;
-// TODO: This (P2 limit) changed
 const PATTERN_3_LIMIT: i16 = 60;
 
 #[derive(Hash, Eq)]
@@ -148,7 +147,7 @@ impl D15Game {
     }
 
     pub fn check_over_dead(&self) -> bool {
-        return self.hp <= 0;
+        return self.hp < 40;
     }
 
     fn get_moveamount(&self) -> i8 {

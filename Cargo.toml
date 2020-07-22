@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 lazy_static = "1.4.0"
 hash_hasher = "2.0.3"
+num_cpus = "1.13.0"
