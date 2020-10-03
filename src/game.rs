@@ -147,7 +147,10 @@ impl D15Game {
     }
 
     pub fn check_over_dead(&self) -> bool {
-        return self.hp < 40;
+        if self.boss.x == 5 {
+            return self.hp < 55;
+        }
+        return self.hp < 48;
     }
 
     fn get_moveamount(&self) -> i8 {
@@ -162,7 +165,9 @@ impl D15Game {
 
         let move_amount = self.get_moveamount();
 
-        if self.hp > PATTERN_3_LIMIT {
+        let is55 = self.boss.x == 5;
+
+        if self.hp >= 120 || (!is55 && self.hp >= 80) {
             moves.push(Move::PASSTURN);
         }
 
@@ -195,6 +200,10 @@ impl D15Game {
         moves.push(Move::CAT);
         moves.push(Move::DRAGON);
         moves.push(Move::SWITCH);
+
+        if is55 && self.hp >= 80 && self.hp < 120 {
+            moves.push(Move::PASSTURN);
+        }
 
         return moves;
     }
@@ -240,7 +249,7 @@ impl D15Game {
     }
     fn cat_move(&mut self) {
         if self.hp > PATTERN_1_LIMIT {
-            // move 1 towards dragon
+            // move 1 towards dragon, prefer Y
             let diff_x = self.dragon.x - self.cat.x;
             let diff_y = self.dragon.y - self.cat.y;
             let cat_move: Point;
@@ -255,11 +264,12 @@ impl D15Game {
         } else if self.hp > PATTERN_2_LIMIT {
             self.cat = self.find_move_until(Entity::CAT, 0, -1, 3);
         } else if self.hp > PATTERN_3_LIMIT {
-            // move 1 away from player
+            // move 1 away from player, prefer y
+
             let diff_x = self.cat.x - self.player.x;
             let diff_y = self.cat.y - self.player.y;
             let cat_move: Point;
-            if diff_x.abs() >= diff_y.abs() {
+            if diff_x.abs() > diff_y.abs() {
                 cat_move = Point { x: self.cat.x + diff_x.signum(), y: self.cat.y };
             } else {
                 cat_move = Point { x: self.cat.x, y: self.cat.y + diff_y.signum() };
