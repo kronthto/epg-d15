@@ -38,6 +38,10 @@ impl Point {
     fn mirror_by_roomcenter(&self) -> Point {
         Point { x: -self.x + ROOM_MAX_X, y: -self.y + ROOM_MAX_Y }
     }
+
+    fn serialize(&self) -> i8 {
+        return self.y * 8 + self.x;
+    }
 }
 
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
@@ -144,6 +148,14 @@ impl D15Game {
                 y: self.boss.y - 1,
             }
         ].iter().all(|required_point| ENTITIES.iter().any(|entity| self.get_entity_position(*entity) == required_point))
+    }
+
+    pub fn check_win_2(&self) -> bool {
+        let spots = [self.player.serialize(), self.cat.serialize(), self.dog.serialize(), self.dragon.serialize()];
+
+        let boss = self.boss.serialize();
+
+        return spots.contains(&(boss + 1)) && spots.contains(&(boss - 1)) && spots.contains(&(boss + 8)) && spots.contains(&(boss - 8));
     }
 
     pub fn check_over_dead(&self) -> bool {

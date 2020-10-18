@@ -128,7 +128,7 @@ fn solve(game: &D15Game, moves_done: &mut Vec<Move>) {
     if game.check_over_dead() {
         return;
     }
-    if game.check_win() {
+    if game.check_win_2() {
         print_result_moves(moves_done);
         unsafe { FINISHED = true; }
         return;
