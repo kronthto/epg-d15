@@ -103,12 +103,12 @@ impl Solver {
         for move_oper in possible_start_moves {
             let mut new_game = game.clone();
             new_game.do_move(&move_oper);
-            let mut moves_done = vec![move_oper];
-            self.solve(&new_game, &mut moves_done);
+            let moves_done = vec![move_oper];
+            self.solve(&new_game, &moves_done);
         }
     }
 
-    fn solve(&mut self, game: &D15Game, moves_done: &mut Vec<Move>) {
+    fn solve(&mut self, game: &D15Game, moves_done: &Vec<Move>) {
             if game.hp <= self.besthp {
                 return;
             }
@@ -141,7 +141,7 @@ impl Solver {
             let mut new_moves_done = moves_done.to_vec();
             new_game.do_move(move_oper);
             new_moves_done.push(*move_oper);
-            self.solve(&new_game, &mut new_moves_done);
+            self.solve(&new_game, &new_moves_done);
         }
     }
 }
