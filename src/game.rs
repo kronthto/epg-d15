@@ -92,7 +92,7 @@ const ENTITIES: [Entity; 5] = [PLAYER, BOSS, Entity::CAT, DOG, DRAGON];
 
 #[derive(Eq, PartialEq, Hash)]
 pub struct D15Game {
-    hp: i16,
+    pub hp: i16,
     player: Point,
     boss: Point,
     cat: Point,
