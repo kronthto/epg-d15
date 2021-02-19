@@ -44,6 +44,22 @@ impl Point {
     }
 }
 
+#[derive(PartialEq, Copy, Clone, Eq, Hash)]
+pub enum Color {
+    YELLOW,
+    GREEN,
+    RED,
+    BLUE
+}
+
+#[derive(PartialEq)]
+enum DogMove {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+}
+
 #[derive(Copy, Clone, Hash, PartialEq, Eq)]
 pub enum PlayerState {
     SWORD,
@@ -83,6 +99,7 @@ pub struct D15Game {
     dog: Point,
     dragon: Point,
     playerstate: PlayerState,
+    sequence: Color
 }
 
 impl D15Game {
@@ -159,6 +176,8 @@ impl D15Game {
     }
 
     pub fn check_over_dead(&self) -> bool {
+        return self.hp < 170;
+
         if self.boss.x == 5 {
             return self.hp < 55;
         }
@@ -179,7 +198,7 @@ impl D15Game {
 
         let is55 = self.boss.x == 5;
 
-        if self.hp >= 120 || (!is55 && self.hp >= 80) {
+        if self.hp < 140 && (self.hp >= 120 || (!is55 && self.hp >= 80)) {
             moves.push(Move::PASSTURN);
         }
 
@@ -246,11 +265,142 @@ impl D15Game {
             PlayerState::SWORD => 4,
             PlayerState::ARMOR => 2,
         };
+
+        self.shift_sequence();
+    }
+
+    fn color_at(&self, x: i8, y: i8) -> Color {
+        let offset_x = x % 2;
+        let offset_y = (7 - y) % 2;
+
+        let offset = offset_x + (2 * offset_y);
+
+        match self.sequence {
+            Color::YELLOW => {
+                match offset {
+                    0 => Color::YELLOW,
+                    1 => Color::GREEN,
+                    2 => Color::RED,
+                    3 => Color::BLUE,
+                    _ => panic!("uk colorat offset - not 0..=3")
+                }
+            }
+            Color::GREEN => {
+                match offset {
+                    0 => Color::GREEN,
+                    1 => Color::RED,
+                    2 => Color::BLUE,
+                    3 => Color::YELLOW,
+                    _ => panic!("uk colorat offset - not 0..=3")
+                }
+            }
+            Color::RED => {
+                match offset {
+                    0 => Color::RED,
+                    1 => Color::BLUE,
+                    2 => Color::YELLOW,
+                    3 => Color::GREEN,
+                    _ => panic!("uk colorat offset - not 0..=3")
+                }
+            }
+            Color::BLUE => {
+                match offset {
+                    0 => Color::BLUE,
+                    1 => Color::YELLOW,
+                    2 => Color::GREEN,
+                    3 => Color::RED,
+                    _ => panic!("uk colorat offset - not 0..=3")
+                }
+            }
+        }
+    }
+
+    fn shift_sequence(&mut self) {
+        match self.sequence {
+            Color::YELLOW => {
+                self.sequence = Color::GREEN;
+            }
+            Color::GREEN => {
+                self.sequence = Color::RED;
+            }
+            Color::RED => {
+                self.sequence = Color::BLUE;
+            }
+            Color::BLUE => {
+                self.sequence = Color::YELLOW;
+            }
+        };
+    }
+
+    fn get_intended_dog_move_direction(&self) -> DogMove {
+        let dog_at = self.color_at(self.dog.x, self.dog.y);
+        match self.sequence {
+            Color::YELLOW => {
+                match dog_at {
+                    Color::YELLOW => DogMove::DOWN,
+                    Color::GREEN => DogMove::UP,
+                    Color::RED => DogMove::RIGHT,
+                    Color::BLUE => DogMove::LEFT,
+                }
+            }
+            Color::GREEN => {
+                match dog_at {
+                    Color::YELLOW => DogMove::DOWN,
+                    Color::GREEN => DogMove::RIGHT,
+                    Color::RED => DogMove::LEFT,
+                    Color::BLUE => DogMove::UP,
+                }
+            }
+            Color::RED => {
+                match dog_at {
+                    Color::YELLOW => DogMove::LEFT,
+                    Color::GREEN => DogMove::RIGHT,
+                    Color::RED => DogMove::UP,
+                    Color::BLUE => DogMove::DOWN,
+                }
+            }
+            Color::BLUE => {
+                match dog_at {
+                    Color::YELLOW => DogMove::RIGHT,
+                    Color::GREEN => DogMove::DOWN,
+                    Color::RED => DogMove::UP,
+                    Color::BLUE => DogMove::LEFT,
+                }
+            }
+        }
     }
 
     fn dog_move(&mut self) {
         if self.hp > PATTERN_1_LIMIT {
-            // todo: find...
+            let intended_x_dir;
+            let intended_y_dir;
+            match self.get_intended_dog_move_direction() {
+                DogMove::UP => {
+                    intended_x_dir = 0i8;
+                    intended_y_dir = 1i8;
+                },
+                DogMove::LEFT => {
+                    intended_x_dir = -1i8;
+                    intended_y_dir = 0i8;
+                },
+                DogMove::RIGHT => {
+                    intended_x_dir = 1i8;
+                    intended_y_dir = 0i8;
+                },
+                DogMove::DOWN => {
+                    intended_x_dir = 0i8;
+                    intended_y_dir = -1i8;
+                }
+            };
+            let prio_1 = Point{x: self.dog.x + (5 * intended_x_dir), y: self.dog.y + (5 * intended_y_dir)};
+            if self.can_move_to(&prio_1, Entity::DOG) {
+                self.dog = prio_1;
+                return;
+            }
+            let prio_2 = Point{x: self.dog.x + (-2 * intended_x_dir), y: self.dog.y + (-2 * intended_y_dir)};
+            if self.can_move_to(&prio_2, Entity::DOG) {
+                self.dog = prio_2;
+            }
         } else if self.hp > PATTERN_2_LIMIT {
             swap(&mut self.dog, &mut self.cat);
         } else if self.hp > PATTERN_3_LIMIT {
@@ -265,6 +415,9 @@ impl D15Game {
             let diff_x = self.dragon.x - self.cat.x;
             let diff_y = self.dragon.y - self.cat.y;
             let cat_move: Point;
+            if !(diff_x.abs() > 1 || diff_y.abs() > 1) {
+                return;
+            }
             if diff_x.abs() > diff_y.abs() {
                 cat_move = Point { x: self.cat.x + diff_x.signum(), y: self.cat.y };
             } else {
@@ -311,7 +464,7 @@ impl D15Game {
         }
     }
 
-    pub fn new(hp: i16, boss: Point, player: Point, cat: Point, dog: Point, dragon: Point, playerstate: PlayerState) -> D15Game {
+    pub fn new(hp: i16, boss: Point, player: Point, cat: Point, dog: Point, dragon: Point, playerstate: PlayerState, sequence: Color) -> D15Game {
         D15Game {
             hp,
             player,
@@ -320,6 +473,7 @@ impl D15Game {
             dog,
             dragon,
             playerstate,
+            sequence
         }
     }
 }
@@ -334,6 +488,7 @@ impl Clone for D15Game {
             dog: self.dog.clone(),
             dragon: self.dragon.clone(),
             playerstate: self.playerstate,
+            sequence: self.sequence
         }
     }
 }

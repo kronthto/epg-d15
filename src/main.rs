@@ -11,7 +11,7 @@ use std::env;
 
 use hash_hasher::{HashBuildHasher, HashedSet};
 
-use crate::game::{D15Game, Move, PlayerState, Point};
+use crate::game::{D15Game, Move, PlayerState, Point, Color};
 use std::cmp::min;
 
 mod game;
@@ -69,7 +69,7 @@ fn main() {
     }
 
     let hp : i16 = res[0].parse().unwrap();
-    if hp > 128 || hp < 62 {
+    if hp > 200 || hp < 50 {
         panic!("Invalid start hp")
     }
     let players_state = ask_playerstate(&res[11]);
@@ -81,7 +81,8 @@ fn main() {
          Point { x: res[5].parse().unwrap(), y: res[6].parse().unwrap() },
          Point { x: res[7].parse().unwrap(), y: res[8].parse().unwrap() },
          Point { x: res[9].parse().unwrap(), y: res[10].parse().unwrap() },
-         players_state
+         players_state,
+         Color::YELLOW
      );
 
     let mut possible_start_moves = game.get_possible_moves();
