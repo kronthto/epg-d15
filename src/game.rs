@@ -98,7 +98,7 @@ pub struct D15Game {
     cat: Point,
     dog: Point,
     dragon: Point,
-    playerstate: PlayerState,
+    pub playerstate: PlayerState,
     sequence: Color
 }
 
@@ -175,13 +175,8 @@ impl D15Game {
         return spots.contains(&(boss + 1)) && spots.contains(&(boss - 1)) && spots.contains(&(boss + 8)) && spots.contains(&(boss - 8));
     }
 
-    pub fn check_over_dead(&self) -> bool {
-        return self.hp < 170;
-
-        if self.boss.x == 5 {
-            return self.hp < 55;
-        }
-        return self.hp < 48;
+    pub fn get_boss_x(&self) -> i8 {
+        self.boss.x
     }
 
     fn get_moveamount(&self) -> i8 {
