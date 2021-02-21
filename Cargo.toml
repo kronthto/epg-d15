@@ -4,9 +4,12 @@ version = "0.1.0"
 authors = ["Tobias Kronthaler <kronthto@gmail.com>"]
 edition = "2018"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lazy_static = "1.4.0"
 hash_hasher = "2.0.3"
-num_cpus = "1.13.0"
+wasm-bindgen = "0.2.70"
+

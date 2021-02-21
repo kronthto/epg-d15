@@ -1,8 +1,9 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
-use std::env;
 
 use hash_hasher::{HashBuildHasher, HashedSet};
+
+use wasm_bindgen::prelude::*;
 
 use crate::game::{D15Game, Move, PlayerState, Point, Color};
 
@@ -31,14 +32,9 @@ fn ask_color(input: &String) -> Color { // TODO: YELLOW if 200 and blocked / or 
     }
 }
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() != 2 {
-        panic!("1 arg expected")
-    }
-
-    let split = args[1].split("_");
+#[wasm_bindgen]
+pub fn solve_d15_from_magicstr(magic_string : String) -> String {
+    let split = magic_string.split("_");
     let res: Vec<String> = split.map(|s| s.to_string()).collect();
 
     if res.len() != 13 {
@@ -67,10 +63,9 @@ fn main() {
     solver.do_solve(&game);
 
     if solver.solve.is_none() {
-        print!("Could not solve - try again ~20 hp down");
-        return;
+        return "Could not solve - try again ~20 hp down".to_string();
     }
-    print_result_moves(&solver.solve.unwrap());
+    return print_result_moves(&solver.solve.unwrap());
 }
 
 struct Solver {
@@ -163,19 +158,21 @@ impl Solver {
     }
 }
 
-fn print_result_moves(moves: &Vec<Move>) {
+fn print_result_moves(moves: &Vec<Move>) -> String {
+    let mut parts : Vec<&str> = vec![];
     for move_oper in moves {
         match move_oper {
-            Move::PASSTURN => print!("PASSTURN_"),
-            Move::LEFT => print!("LEFT_"),
-            Move::RIGHT => print!("RIGHT_"),
-            Move::UP => print!("UP_"),
-            Move::DOWN => print!("DOWN_"),
-            Move::DOG => print!("DOG_"),
-            Move::CAT => print!("CAT_"),
-            Move::DRAGON => print!("DRAGON_"),
-            Move::SWITCH => print!("SWITCH_"),
+            Move::PASSTURN => parts.push("PASSTURN_"),
+            Move::LEFT => parts.push("LEFT_"),
+            Move::RIGHT => parts.push("RIGHT_"),
+            Move::UP => parts.push("UP_"),
+            Move::DOWN => parts.push("DOWN_"),
+            Move::DOG => parts.push("DOG_"),
+            Move::CAT => parts.push("CAT_"),
+            Move::DRAGON => parts.push("DRAGON_"),
+            Move::SWITCH => parts.push("SWITCH_"),
         };
     }
+    parts.join("")
 }
 
